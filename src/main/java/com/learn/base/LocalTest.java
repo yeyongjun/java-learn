@@ -1,6 +1,8 @@
 package com.learn.base;
 
-import java.lang.reflect.Field;
+import com.learn.alg.list.node.ListNode;
+import com.learn.alg.list.node.ReverseListNode;
+
 import java.util.*;
 
 /**
@@ -92,8 +94,88 @@ public class LocalTest {
 //        System.out.println(array[0][0] == '\0');
 //        System.out.println(longestPalindrome("cbbd"));
 
-        System.out.println(convert("A", 2));
+//        System.out.println(convert("A", 2));
+//        System.out.println(letterCombinations("23"));
+//        System.out.println(Integer.MAX_VALUE);
+//
+//        long sum = (long) -294967296 - 1000000000 - 1000000000;
+//        Solution solution = new Solution();
+//        List<String> list = solution.generateParenthesis(3);
+//        System.out.println(list);
+
+        ListNode listNode = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, null))));
+//        printListNode(listNode);
+        ListNode result = ReverseListNode.reverse2(listNode);
+        printListNode(result);
     }
+
+    private static void printListNode(ListNode listNode) {
+        while (listNode != null) {
+            System.out.print(listNode.val + " ");
+            listNode = listNode.next;
+        }
+    }
+
+    public static ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pointer = head;
+        ListNode result = null;
+        while (pointer != null && pointer.next != null) {
+            ListNode tmpNext = pointer.next.next;
+            ListNode tmp = pointer;
+            pointer = pointer.next;
+            pointer.next = tmp;
+            if (result == null) {
+                result = pointer;
+            }
+            tmp.next = tmpNext;
+            pointer = tmpNext;
+            if (pointer != null && pointer.next != null) {
+                tmp.next = pointer.next;
+            }
+        }
+        return result;
+    }
+
+    static class Solution {
+        public List<String> generateParenthesis(int n) {
+            List<String> combinations = new ArrayList<String>();
+            generateAll(new char[2 * n], 0, combinations);
+            return combinations;
+        }
+
+        public void generateAll(char[] current, int pos, List<String> result) {
+            if (pos == current.length) {
+                if (valid(current)) {
+                    result.add(new String(current));
+                }
+            } else {
+                current[pos] = '(';
+                generateAll(current, pos + 1, result);
+                current[pos] = ')';
+                generateAll(current, pos + 1, result);
+            }
+        }
+
+        public boolean valid(char[] current) {
+            int balance = 0;
+            for (char c: current) {
+                if (c == '(') {
+                    ++balance;
+                } else {
+                    --balance;
+                }
+                if (balance < 0) {
+                    return false;
+                }
+            }
+            return balance == 0;
+        }
+    }
+
+
 
     public static String convert(String s, int numRows) {
 //        s.length() / (numRows * 3 - 2) * numRows
@@ -189,5 +271,48 @@ public class LocalTest {
             }
         }
         return false;
+    }
+
+    public static List<String> letterCombinations(String digits) {
+        if (digits == null || "".equals(digits)) {
+            return Collections.emptyList();
+        }
+        Map<String, List<String>> initMap = new HashMap<>();
+        initMap.put("2", Arrays.asList("a","b","c"));
+        initMap.put("3", Arrays.asList("d","e","f"));
+        initMap.put("4", Arrays.asList("g","h","i"));
+        initMap.put("5", Arrays.asList("j","k","l"));
+        initMap.put("6", Arrays.asList("m","n","o"));
+        initMap.put("7", Arrays.asList("p","q","r","s"));
+        initMap.put("8", Arrays.asList("t","u","v"));
+        initMap.put("9", Arrays.asList("w","x","y","z"));
+
+
+        int size = 1;
+        int dLength = digits.length();
+        for (Character c: digits.toCharArray()) {
+            List<String> tmp = initMap.get(String.valueOf(c));
+            size = size * tmp.size();
+        }
+        int t = size;
+        List<StringBuilder> result = new ArrayList<>(size);
+        while (t-- > 0) {
+            result.add(new StringBuilder());
+        }
+        char[] array = digits.toCharArray();
+        int tmpSize = size;
+        for (int i =0; i< dLength; i++) {
+            char c = array[i];
+            List<String> tmp = initMap.get(String.valueOf(c));
+            tmpSize = tmpSize/tmp.size();
+            for (int j =0; j < size; j++) {
+                result.get(j).append(tmp.get(j/tmpSize%tmp.size()));
+            }
+        }
+        List<String> r = new ArrayList<>(size);
+        for (StringBuilder sb : result) {
+            r.add(sb.toString());
+        }
+        return r;
     }
 }

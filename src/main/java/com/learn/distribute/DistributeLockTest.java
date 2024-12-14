@@ -4,6 +4,12 @@ import cn.hutool.core.thread.ThreadUtil;
 import com.learn.distribute.lock.ZookeeperLock;
 import com.learn.distribute.lock.ZookeeperLock2;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
+
+import java.util.List;
 
 /**
  * @author yeyongjun
@@ -12,9 +18,45 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DistributeLockTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         System.setProperty("logging.level.com.learn", "INFO");
-        zookeeperLockTest2();
+        zkTest();
+    }
+
+    private static void zkTest() throws Exception{
+        ZooKeeper zk = new ZooKeeper("172.16.248.132:2181,172.16.248.133:2181,172.16.249.113:2181",
+                    3000, event-> System.out.println("receive event" + event));
+
+        // 创建相同的非顺序节点会报错
+        String lockNode = zk.create("/locks/sumo", new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        log.info("lockNode is {}", lockNode);
+        //会报错
+//        lockNode = zk.create("/locks/sumo", new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+//        log.info("lockNode is {}", lockNode);
+
+        // 创建相同的顺序节点不会报错，会递增序号
+        lockNode = zk.create("/locks/sumo", new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+        log.info("lockNode is {}", lockNode);
+        lockNode = zk.create("/locks/sumo", new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+        log.info("lockNode is {}", lockNode);
+        // 获取子节点
+        List<String> list = zk.getChildren("/locks", false);
+        log.info("getChildren: {}", list);
+
+        //判断当前节点是临时节点还是持久节点
+        String path = "/locks/" + "sumo";
+        Stat stat = zk.exists(path, false);
+        log.info("path:{}, res: {}", path, stat);
+        if (stat != null) {
+            long ephemeralOwner = stat.getEphemeralOwner();
+            if (ephemeralOwner != 0) {
+                System.out.println("This is an ephemeral (temporary) node.");
+            } else {
+                System.out.println("This is a persistent (permanent) node.");
+            }
+        } else {
+            System.out.println("Node does not exist.");
+        }
     }
 
     private static void zookeeperLockTest() {
