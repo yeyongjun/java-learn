@@ -30,7 +30,7 @@ public class QuickSortService implements ISortService {
                 array[pointer] = temp;
                 pointer++;
             }
-            System.out.println(Arrays.toString(array));
+            System.out.println("pivot:"+ pivot + " array:" + Arrays.toString(array));
         }
         int temp = array[pointer];
         array[pointer] = array[end];

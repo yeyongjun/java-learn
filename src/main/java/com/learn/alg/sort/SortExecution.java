@@ -8,7 +8,7 @@ import java.util.Arrays;
  */
 public class SortExecution {
     public static void main(String[] args) {
-        ISortService sortService = new BucketSortService();
+        ISortService sortService = new QuickSortService();
         int[] array = new int[]{10,7,11,3,6,4,9,8};
         System.out.println("begin array:" + Arrays.toString(array));
         sortService.sort(array);
