@@ -9,12 +9,12 @@ import java.util.*;
 public class CombinationSum {
 
     public static void main(String[] args) {
-//        int[] array = new int[]{2,5,2,1,2}; //1,2,2,2,5
-//        Arrays.sort(array);
-//        List<List<Integer>> res = new CombinationSum().combinationSum2(array, 5);
-//        System.out.println(res);
+        int[] array = new int[]{2,5,2,1,2}; //1,2,2,2,5
+        Arrays.sort(array);
+        List<List<Integer>> res = new CombinationSum().combinationSum2(array, 5);
+        System.out.println(res);
 
-        System.out.println(firstMissingPositive2(new int[]{3,4,-1,1}));
+//        System.out.println(firstMissingPositive2(new int[]{3,4,-1,1}));
     }
 
     public static int firstMissingPositive2(int[] nums) {
@@ -54,6 +54,14 @@ public class CombinationSum {
         return i;
     }
 
+    /**
+     * 给定一个候选人编号的集合 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+     *
+     * candidates 中的每个数字在每个组合中只能使用 一次 。
+     * @param candidates
+     * @param target
+     * @return
+     */
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         Arrays.sort(candidates);
         List<List<Integer>> res = new ArrayList<>();
@@ -73,6 +81,7 @@ public class CombinationSum {
         if (target == 0) {
             res.add(new ArrayList<>(combines));
             return;
+
         }
         if (target < 0 || index >= candidates.length) {
             return;
@@ -88,6 +97,14 @@ public class CombinationSum {
     }
 
 
+    /**
+     * 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+     *
+     * candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。
+     * @param candidates
+     * @param target
+     * @return
+     */
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         List<List<Integer>> ans = new ArrayList<>();
         List<Integer> combine = new ArrayList<>();
